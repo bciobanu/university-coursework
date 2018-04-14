@@ -3,31 +3,41 @@
 #include <map>
 #include <vector>
 #include <functional>
-
+#include <algorithm>
 using namespace std;
 
 class DFA {
   public:
     friend istream& operator >>(istream& in, DFA& rhs) {
-        int num_states, num_transitions, num_final; 
-        in >> num_states >> num_transitions >> num_final;
-
-        rhs.final_states_.clear();
-        rhs.delta_.clear();
+        int num_states; in >> num_states;
+        vector<int> states(num_states);
+        for (auto& iter : states) { in >> iter; }
+        sort(states.begin(), states.end());
         rhs.delta_.resize(num_states);
-
-        for (int i = 0; i < num_final; ++i) {
-            int state; in >> state;
-            rhs.final_states_.insert(state);
-        }
-
-        for (int i = 0; i < num_transitions; ++i) {
-            int s1, s2; char ch; cin >> s1 >> ch >> s2;
-            rhs.delta_[s1][ch] = s2;
-        }
         
-        in >> rhs.initial_state_;
+        // ignore sigma information
+        in.ignore(256, '\n');
+        in.ignore(256, '\n'); 
+        in.ignore(256, '\n');
+        
+        function<int(const int)> Relabel = [&](const int state) {
+            return lower_bound(states.begin(), states.end(), state) - states.begin();    
+        };
+        
+        in >> rhs.initial_state_; rhs.initial_state_ = Relabel(rhs.initial_state_);
+        
+        int num_final_states; in >> num_final_states;
+        for (int i = 0; i < num_final_states; ++i) {
+            int state; in >> state;
+            rhs.final_states_.insert(Relabel(state));
+        }
 
+        int num_transitions; in >> num_transitions;
+        for (int _ = 0; _ < num_transitions; ++_) {
+            int from, to; char label; in >> from >> label >> to;
+            from = Relabel(from); to = Relabel(to);
+            rhs.delta_[from][label] = to;
+        } 
         return in;
     }
 
@@ -107,22 +117,3 @@ int main() {
     DFA a, b; cin >> a >> b;
     cout << a.Equivalent(b) << endl;
 }
-
-/*
-3 6 2
-1 2
-0 a 2
-0 b 1
-1 a 1
-1 b 2
-2 a 2
-2 b 2
-0
-2 4 1
-1
-0 a 1
-0 b 1
-1 a 1
-1 b 1
-0
-*/
