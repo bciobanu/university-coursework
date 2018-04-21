@@ -36,6 +36,7 @@ AvlSet<Key, Comp>& AvlSet<Key, Comp>::operator =(AvlSet<Key, Comp>&& oth) noexce
 
   oth.root_ = AvlNode<Key>::sentinel();
   oth.size_ = 0;
+  return *this;
 }
 
 template<typename Key, typename Comp>
@@ -109,7 +110,7 @@ void AvlSet<Key, Comp>::Add(AvlNode<Key>*& node, const Key datum) {
   Add(node->get(dir), datum);
   if (node->get(dir)->height() > node->get(1 - dir)->height() + 1) {
     if (node->get(dir)->get(1 - dir)->height() 
-      > node->get(dir)->get(dir)->height()) {
+          > node->get(dir)->get(dir)->height()) {
       node->get(dir) = node->get(dir)->rotate(1 - dir);
     }
 
