@@ -35,7 +35,9 @@ AvlNode<U>* AvlNode<U>::rotate(const size_t dir) {
 template<typename U>
 std::ostream& operator <<(std::ostream& os, const AvlNode<U>& rhs) {
   if (rhs.height() == 0) return os;           
-
+  std::cerr << "HERE" << std::endl;
+  return os;
+  
   os << *rhs.get(0);
   if (rhs.get(0)->height() != 0) os << ' ';
   

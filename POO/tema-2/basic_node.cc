@@ -16,6 +16,11 @@ T*& BasicNode<T, U>::get(const size_t dir) {
 }
 
 template<typename T, typename U>
-U BasicNode<T, U>::value() const { return datum_; }
+const U& BasicNode<T, U>::value() const { return datum_; }
+
+template<typename T, typename U>
+U& BasicNode<T, U>::value() {
+  return const_cast<U&>(static_cast<const BasicNode<T, U>&>(*this).value());
+}
 
 }  // namespace avl

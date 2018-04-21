@@ -23,6 +23,8 @@ class AvlSet {
   template<typename... Args>
   void Emplace(Args&&... args);
 
+  void Erase(const Key);
+
   bool Empty() const;
   size_t Size() const;
 
@@ -36,10 +38,13 @@ class AvlSet {
  private:
   void Consume(AvlNode<Key>*&);
   AvlNode<Key>* CopyStructure(const AvlNode<Key>*) const;
+  void Balance(AvlNode<Key>*&);
 
   void Add(AvlNode<Key>*&, const Key);
   bool Search(const AvlNode<Key>*, const Key) const;
-
+  void Delete(AvlNode<Key>*&, const Key);
+  Key DeleteMin(AvlNode<Key>*&) noexcept;
+  
   AvlNode<Key>* root_; 
   size_t size_;
 };

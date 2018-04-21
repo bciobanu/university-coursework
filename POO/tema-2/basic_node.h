@@ -7,11 +7,12 @@ template<typename T, typename U>
 class BasicNode {
  public:
   BasicNode(const U datum=U(), T* l=nullptr, T* r=nullptr);
-  BasicNode(const BasicNode&) = delete;
-  BasicNode& operator =(const BasicNode&) = delete;
+  
   T* const& get(const size_t) const;
   T*& get(const size_t);
-  U value() const;
+
+  const U& value() const;
+  U& value();
  private:
   U datum_;
   T* son_[2];

@@ -52,6 +52,9 @@ void AvlSet<Key, Comp>::Emplace(Args&&... args) {
 }
 
 template<typename Key, typename Comp>
+void AvlSet<Key, Comp>::Erase(const Key datum) { Delete(root_, datum); }
+
+template<typename Key, typename Comp>
 bool AvlSet<Key, Comp>::Empty() const { return size_ == 0; }
 
 template<typename Key, typename Comp>
@@ -70,7 +73,7 @@ void AvlSet<Key, Comp>::Clear() {
 }
 
 template<typename Key, typename Comp>
-std::ostream& operator <<(std::ostream& os, const AvlSet<Key, Comp>& rhs) { 
+std::ostream& operator <<(std::ostream& os, const AvlSet<Key, Comp>& rhs) {
   return os << *rhs.root_; 
 }
 
@@ -95,6 +98,22 @@ AvlNode<Key>* AvlSet<Key, Comp>::CopyStructure(const AvlNode<Key>* node) const {
 }
 
 template<typename Key, typename Comp>
+void AvlSet<Key, Comp>::Balance(AvlNode<Key>*& node) {
+  if (node == AvlNode<Key>::sentinel()) return;
+  for (size_t dir : {0, 1}) {
+    if (node->get(dir)->height() > node->get(1 - dir)->height() + 1) {
+      if (node->get(dir)->get(1 - dir)->height() 
+            > node->get(dir)->get(dir)->height()) {
+        node->get(dir) = node->get(dir)->rotate(1 - dir);
+      }
+
+      node = node->rotate(dir);
+    }
+  }
+  node->refresh();
+}
+
+template<typename Key, typename Comp>
 void AvlSet<Key, Comp>::Add(AvlNode<Key>*& node, const Key datum) {
   if (node == AvlNode<Key>::sentinel()) {
     node = new AvlNode<Key>(datum);
@@ -108,16 +127,7 @@ void AvlSet<Key, Comp>::Add(AvlNode<Key>*& node, const Key datum) {
 
   const size_t dir = !Comp()(datum, node->value());
   Add(node->get(dir), datum);
-  if (node->get(dir)->height() > node->get(1 - dir)->height() + 1) {
-    if (node->get(dir)->get(1 - dir)->height() 
-          > node->get(dir)->get(dir)->height()) {
-      node->get(dir) = node->get(dir)->rotate(1 - dir);
-    }
-
-    node = node->rotate(dir);
-  }
-
-  node->refresh();
+  Balance(node);
 }
 
 template<typename Key, typename Comp>
@@ -131,6 +141,46 @@ bool AvlSet<Key, Comp>::Search(const AvlNode<Key>* node, const Key datum) const 
 
   const size_t dir = !Comp()(datum, node->value());
   return Search(node->get(dir), datum);
+}
+
+template<typename Key, typename Comp>
+void AvlSet<Key, Comp>::Delete(AvlNode<Key>*& node, const Key datum) {
+  if (node == AvlNode<Key>::sentinel()) return;
+  if (!Comp()(datum, node->value()) and !Comp()(node->value(), datum)) {
+    --size_;
+    for (size_t dir : {0, 1}) {
+      if (node->get(dir) == AvlNode<Key>::sentinel()) {
+        auto aux = node->get(1 - dir);
+        delete node;
+        node = aux;
+        Balance(node);
+        return;
+      }
+    }
+
+    node->value() = DeleteMin(node->get(1));
+    Balance(node);
+    return;
+  }
+
+  const size_t dir = !Comp()(datum, node->value());
+  Delete(node->get(dir), datum);
+  Balance(node);
+}
+
+template<typename Key, typename Comp>
+Key AvlSet<Key, Comp>::DeleteMin(AvlNode<Key>*& node) noexcept {
+  if (node->get(0) == AvlNode<Key>::sentinel()) {
+    auto result = node->value();
+    auto former = node;
+    node = node->get(1);
+    delete former;
+    return result;
+  }
+
+  auto&& result = DeleteMin(node->get(0));
+  Balance(node);
+  return result;
 }
 
 }  // namespace avl

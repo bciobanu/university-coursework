@@ -11,8 +11,6 @@ class AvlNode : public BasicNode<AvlNode<U>, U> {  // CRTP
  public:
   AvlNode();
   AvlNode(const U datum, AvlNode* l=sentinel(), AvlNode* r=sentinel());
-  AvlNode(const AvlNode&) = delete;
-  AvlNode& operator =(const AvlNode&) = delete;
   
   int height() const;
   void refresh();
