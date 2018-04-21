@@ -30,7 +30,7 @@ template<typename Key, typename Comp>
 AvlSet<Key, Comp>& AvlSet<Key, Comp>::operator =(AvlSet<Key, Comp>&& oth) noexcept {
   if (this == &oth) return *this;
   
-  Clear(root_);
+  Consume(root_);
   root_ = oth.root_;
   size_ = oth.size_;
 
