@@ -3,7 +3,7 @@
 namespace avl {
 
 template<typename U>
-AvlNode<U>::AvlNode() : BasicNode<AvlNode<U>, U>(U(0), this, this), height_(0) {}
+AvlNode<U>::AvlNode() : BasicNode<AvlNode<U>, U>(U(), this, this), height_(0) {}
 
 template<typename U>
 AvlNode<U>::AvlNode(const U datum, AvlNode* l, AvlNode* r) 
@@ -47,7 +47,7 @@ std::ostream& operator <<(std::ostream& os, const AvlNode<U>& rhs) {
 }
 
 template<typename U>
-AvlNode<U>* const& AvlNode<U>::sentinel() {
+AvlNode<U>* const& AvlNode<U>::sentinel() {  // TODO: move to an object pool
   static AvlNode<U>* NIL = new AvlNode<U>();
   return NIL;
 }

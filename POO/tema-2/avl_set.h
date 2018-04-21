@@ -3,25 +3,45 @@
 
 #include "avl_node.h"
 
+#include <functional>  // std::less
+
 namespace avl {
 
-template<typename Key>
+template<typename Key, typename Comp=std::less<Key>>
 class AvlSet {
  public:
   AvlSet();
-  virtual ~AvlSet();
-
+  AvlSet(const AvlSet&);
+  AvlSet(AvlSet&& oth) noexcept;
+  virtual ~AvlSet() noexcept;
+  AvlSet& operator =(const AvlSet&);
+  AvlSet& operator =(AvlSet&&) noexcept;
+  
   void Insert(const Key);
+  bool Find(const Key) const;
 
-  template<typename T>
-  friend std::ostream& operator <<(std::ostream& os, const AvlSet<T>& rhs);
+  template<typename... Args>
+  void Emplace(Args&&... args);
+
+  bool Empty() const;
+  size_t Size() const;
+
+  void Swap(AvlSet&);
+
+  void Clear();
+
+  template<typename K, typename C>
+  friend std::ostream& operator <<(std::ostream& os, const AvlSet<K, C>& rhs);
 
  private:
   void Consume(AvlNode<Key>*&);
-  
+  AvlNode<Key>* CopyStructure(const AvlNode<Key>*) const;
+
   void Add(AvlNode<Key>*&, const Key);
+  bool Search(const AvlNode<Key>*, const Key) const;
 
   AvlNode<Key>* root_; 
+  size_t size_;
 };
 
 }  // namespace avl
