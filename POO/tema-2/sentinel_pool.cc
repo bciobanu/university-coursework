@@ -14,8 +14,8 @@ template<typename T>
 SentinelPool<T>::~SentinelPool() {
   --objects_alive_;
   if (objects_alive_ == 1) {  // the sentinel also counts
-    objects_alive_ = 0;
     delete sentinel_; 
+    sentinel_ = nullptr;
   }
 }
 
