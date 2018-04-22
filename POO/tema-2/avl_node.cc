@@ -46,10 +46,4 @@ std::ostream& operator <<(std::ostream& os, const AvlNode<U>& rhs) {
   return os;
 }
 
-template<typename U>
-AvlNode<U>* const& AvlNode<U>::sentinel() {  // TODO: move to an object pool
-  static AvlNode<U>* NIL = new AvlNode<U>();
-  return NIL;
-}
-
 }  // namespace avl

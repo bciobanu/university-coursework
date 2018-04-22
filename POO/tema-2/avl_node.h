@@ -2,15 +2,18 @@
 #define _AVL_NODE_H
 
 #include "basic_node.h"
+#include "sentinel_pool.h"
 #include <iostream>
 
 namespace avl {
 
 template<typename U>
-class AvlNode : public BasicNode<AvlNode<U>, U> {  // CRTP
+class AvlNode : public BasicNode<AvlNode<U>, U>, public SentinelPool<AvlNode<U>> {  // CRTP
  public:
   AvlNode();
-  AvlNode(const U datum, AvlNode* l=sentinel(), AvlNode* r=sentinel());
+  AvlNode(const U datum, 
+    AvlNode<U>* l=SentinelPool<AvlNode<U>>::sentinel(), 
+    AvlNode<U>* r=SentinelPool<AvlNode<U>>::sentinel());
   
   int height() const;
   void refresh();
@@ -19,8 +22,6 @@ class AvlNode : public BasicNode<AvlNode<U>, U> {  // CRTP
   
   template<typename T>
   friend std::ostream& operator <<(std::ostream& os, const AvlNode<T>& rhs);
-
-  static AvlNode* const& sentinel();
 
  private: 
   int height_;
