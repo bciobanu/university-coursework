@@ -8,6 +8,12 @@ class SentinelPool {
  public:
   SentinelPool();
   virtual ~SentinelPool();
+
+  SentinelPool(const SentinelPool&) = delete;
+  SentinelPool(SentinelPool&&) = delete;
+  SentinelPool& operator =(const SentinelPool&) = delete;
+  SentinelPool& operator =(SentinelPool&&) = delete;
+
   static T* const& sentinel();
  private:
   static int objects_alive_;

@@ -3,6 +3,7 @@
 
 #include "basic_node.h"
 #include "sentinel_pool.h"
+
 #include <iostream>
 
 namespace avl {
@@ -14,6 +15,12 @@ class AvlNode : public BasicNode<AvlNode<U>, U>, public SentinelPool<AvlNode<U>>
   AvlNode(const U datum, 
     AvlNode<U>* l=SentinelPool<AvlNode<U>>::sentinel(), 
     AvlNode<U>* r=SentinelPool<AvlNode<U>>::sentinel());
+  virtual ~AvlNode() = default;
+  
+  AvlNode(const AvlNode&) = delete;
+  AvlNode(AvlNode&&) = delete;
+  AvlNode& operator =(const AvlNode&) = delete;
+  AvlNode& operator =(AvlNode&&) = delete;
   
   int height() const;
   void refresh();

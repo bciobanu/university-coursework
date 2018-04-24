@@ -1,12 +1,18 @@
 #include "basic_node.h"
 
+#include <stdexcept> 
+
 namespace avl {
 
 template<typename T, typename U>
 BasicNode<T, U>::BasicNode(const U datum, T* l, T* r) : datum_(datum), son_{l, r} {}
 
 template<typename T, typename U>
-T* const& BasicNode<T, U>::get(const size_t dir) const {  // TODO: exceptions
+T* const& BasicNode<T, U>::get(const size_t dir) const {
+  if (dir > 1) {  // 2x slower
+    throw std::out_of_range("BasicNode<T, U>::get() : dir is out of range");
+  }
+
   return son_[dir]; 
 }
 

@@ -73,6 +73,13 @@ void AvlSet<Key, Comp>::Clear() {
 }
 
 template<typename Key, typename Comp>
+std::istream& operator >>(std::istream& is, AvlSet<Key, Comp>& rhs) {
+  Key el; is >> el;
+  rhs.Insert(el);
+  return is;
+}
+
+template<typename Key, typename Comp>
 std::ostream& operator <<(std::ostream& os, const AvlSet<Key, Comp>& rhs) {
   return os << *rhs.root_; 
 }

@@ -2,13 +2,14 @@
 #define _AVL_SET_H
 
 #include "avl_node.h"
+#include "set_interface.h"
 
 #include <functional>  // std::less
 
 namespace avl {
 
 template<typename Key, typename Comp=std::less<Key>>
-class AvlSet {
+class AvlSet : public SetInterface<Key, Comp> {
  public:
   AvlSet();
   AvlSet(const AvlSet&);
@@ -17,23 +18,25 @@ class AvlSet {
   AvlSet& operator =(const AvlSet&);
   AvlSet& operator =(AvlSet&&) noexcept;
   
-  void Insert(const Key);
-  bool Find(const Key) const;
+  void Insert(const Key) override;
+  bool Find(const Key) const override;
+  void Erase(const Key) override;
+
+  bool Empty() const override;
+  size_t Size() const override;
+
+  void Clear() override;
 
   template<typename... Args>
   void Emplace(Args&&... args);
-
-  void Erase(const Key);
-
-  bool Empty() const;
-  size_t Size() const;
-
+  
   void Swap(AvlSet&);
 
-  void Clear();
+  template<typename K, typename C>
+  friend std::istream& operator >>(std::istream&, AvlSet<K, C>&);
 
   template<typename K, typename C>
-  friend std::ostream& operator <<(std::ostream& os, const AvlSet<K, C>& rhs);
+  friend std::ostream& operator <<(std::ostream&, const AvlSet<K, C>&);
 
  private:
   void Consume(AvlNode<Key>*&);
