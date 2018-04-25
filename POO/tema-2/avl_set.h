@@ -32,6 +32,9 @@ class AvlSet : public SetInterface<Key, Comp> {
   
   void Swap(AvlSet&);
 
+  AvlSet& operator +=(AvlSet);
+  AvlSet operator +(const AvlSet&) const;
+
   template<typename K, typename C>
   friend std::istream& operator >>(std::istream&, AvlSet<K, C>&);
 

@@ -1,6 +1,5 @@
 #include "avl_set.h"
-
-#include <algorithm>  // std::swap
+#include "utilities.h"
 
 namespace avl {
 
@@ -62,8 +61,8 @@ size_t AvlSet<Key, Comp>::Size() const { return size_; }
 
 template<typename Key, typename Comp>
 void AvlSet<Key, Comp>::Swap(AvlSet<Key, Comp>& oth) {
-  std::swap(root_, oth.root_); 
-  std::swap(size_, oth.size_);
+  avl::Swap(root_, oth.root_); 
+  avl::Swap(size_, oth.size_);
 }
 
 template<typename Key, typename Comp>
@@ -72,6 +71,20 @@ void AvlSet<Key, Comp>::Clear() {
   size_ = 0;
 }
 
+template<typename Key, typename Comp>
+AvlSet<Key, Comp>& AvlSet<Key, Comp>::operator +=(AvlSet<Key, Comp> rhs) {
+  while (not rhs.Empty()) {
+    Insert(rhs.root_->value());
+    rhs.Erase(rhs.root_->value());
+  }
+  return *this;
+}
+
+template<typename Key, typename Comp>
+AvlSet<Key, Comp> AvlSet<Key, Comp>::operator +(const AvlSet<Key, Comp>& rhs) const {
+  return AvlSet(*this) += rhs;
+}
+  
 template<typename Key, typename Comp>
 std::istream& operator >>(std::istream& is, AvlSet<Key, Comp>& rhs) {
   Key el; is >> el;
