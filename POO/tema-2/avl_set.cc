@@ -132,7 +132,7 @@ AvlNode<Key>* AvlSet<Key, Comp>::ArrayBuild(const Key* b, const Key* e) const {
   }
 
   for (ptrdiff_t i = n - 1; i > 0; --i) {
-    if (Comp()(*(e - i), *(e - i - 1))) {
+    if (not Comp()(*(e - i - 1), *(e - i))) {
       throw std::invalid_argument("AvlSet expects sorted range");
     }
   }
