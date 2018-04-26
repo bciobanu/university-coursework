@@ -10,6 +10,9 @@ template<typename Key, typename Comp>
 AvlSet<Key, Comp>::AvlSet(const AvlSet<Key, Comp>& oth) : root_(CopyStructure(oth.root_)), size_(oth.size_) {}
 
 template<typename Key, typename Comp>
+AvlSet<Key, Comp>::AvlSet(const Key* b, const Key* e) : root_(ArrayBuild(b, e)), size_(e - b) {}
+
+template<typename Key, typename Comp>
 AvlSet<Key, Comp>::AvlSet(AvlSet&& oth) noexcept : root_(oth.root_), size_(oth.size_) {
   oth.root_ = AvlNode<Key>::sentinel();
   oth.size_ = 0;
@@ -115,6 +118,33 @@ AvlNode<Key>* AvlSet<Key, Comp>::CopyStructure(const AvlNode<Key>* node) const {
   return new AvlNode<Key>(node->value(), 
                   CopyStructure(node->get(0)),
                   CopyStructure(node->get(1)));
+}
+
+template<typename Key, typename Comp>
+AvlNode<Key>* AvlSet<Key, Comp>::ArrayBuild(const Key* b, const Key* e) const {
+  const ptrdiff_t n = e - b;
+
+  if (n == 0) {
+    return AvlNode<Key>::sentinel();
+  }
+  if (n < 0) {
+    throw std::invalid_argument("Bad range");
+  }
+
+  for (ptrdiff_t i = n - 1; i > 0; --i) {
+    if (Comp()(*(e - i), *(e - i - 1))) {
+      throw std::invalid_argument("AvlSet expects sorted range");
+    }
+  }
+
+  return BuildSet(b, e);
+}
+
+template<typename Key, typename Comp>
+AvlNode<Key>* AvlSet<Key, Comp>::BuildSet(const Key* b, const Key* e) const {
+  if (b == e) return AvlNode<Key>::sentinel();
+  const Key* mid = b + (e - b) / 2;
+  return new AvlNode<Key>(*mid, BuildSet(b, mid), BuildSet(mid + 1, e));
 }
 
 template<typename Key, typename Comp>

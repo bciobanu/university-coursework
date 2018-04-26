@@ -13,6 +13,7 @@ class AvlSet : public SetInterface<Key, Comp> {
  public:
   AvlSet();
   AvlSet(const AvlSet&);
+  AvlSet(const Key*, const Key*);
   AvlSet(AvlSet&& oth) noexcept;
   virtual ~AvlSet() noexcept;
   AvlSet& operator =(const AvlSet&);
@@ -44,6 +45,9 @@ class AvlSet : public SetInterface<Key, Comp> {
  private:
   void Consume(AvlNode<Key>*&);
   AvlNode<Key>* CopyStructure(const AvlNode<Key>*) const;
+
+  AvlNode<Key>* ArrayBuild(const Key*, const Key*) const;
+  AvlNode<Key>* BuildSet(const Key*, const Key*) const;
   void Balance(AvlNode<Key>*&);
 
   void Add(AvlNode<Key>*&, const Key);
