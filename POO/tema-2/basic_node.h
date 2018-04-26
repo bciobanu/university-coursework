@@ -1,7 +1,7 @@
 #ifndef _BASIC_NODE_H
 #define _BASIC_NODE_H
 
-#include <cstdint>
+#include <cstddef>
 
 namespace avl {
 
