@@ -1,12 +1,12 @@
 #ifndef _GROUPS_ADDITIVE_SET_ELEMENT_H_
 #define _GROUPS_ADDITIVE_SET_ELEMENT_H_
 
-#include "../set_element.h"
+#include "../../utils/utils.h"
 
 namespace crypto {
 
 template<typename T>
-class AdditiveSetElement : public GenericSetElement<T> {
+class AdditiveSetElement : public utils::GenericGet<T&> {
   public:
     AdditiveSetElement(T&);
     AdditiveSetElement<T>& operator +=(const AdditiveSetElement&);

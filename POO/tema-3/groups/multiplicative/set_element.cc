@@ -1,14 +1,13 @@
 #include "set_element.h"
-#include "../set_element.h"
 
 namespace crypto {
 
 template<typename T>
-MultiplicativeSetElement<T>::MultiplicativeSetElement(T& el) : GenericSetElement<T>(el) {}
+MultiplicativeSetElement<T>::MultiplicativeSetElement(T& el) : utils::GenericGet<T&>(el) {}
 
 template<typename T>
 MultiplicativeSetElement<T>& MultiplicativeSetElement<T>::operator *=(const MultiplicativeSetElement& rhs) {
-    this->el_.get() *= rhs.el_.get();
+    this->get().get() *= rhs.get().get();
     return *this;
 }
 
@@ -19,10 +18,10 @@ MultiplicativeSetElement<T> MultiplicativeSetElement<T>::operator *(const Multip
 
 template<typename T>
 MultiplicativeSetElement<T>& MultiplicativeSetElement<T>::operator /=(const MultiplicativeSetElement& rhs) {
-    if (rhs.el_.IsNull()) {
+    if (rhs.get().IsNull()) {
         throw std::overflow_error("Division by zero");
     }
-    this->el_.get() /= rhs.el_.get();
+    this->get().get() /= rhs.get().get();
     return *this;
 }
 

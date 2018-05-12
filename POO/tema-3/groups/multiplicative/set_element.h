@@ -1,12 +1,12 @@
 #ifndef _GROUPS_MULTIPLICATIVE_SET_ELEMENT_H_
 #define _GROUPS_MULTIPLICATIVE_SET_ELEMENT_H_
 
-#include "../set_element.h"
+#include "../../utils/utils.h"
 
 namespace crypto {
 
 template<typename T>
-class MultiplicativeSetElement : public GenericSetElement<T> {
+class MultiplicativeSetElement : public utils::GenericGet<T&> {
   public:
     MultiplicativeSetElement(T&);
     MultiplicativeSetElement<T>& operator *=(const MultiplicativeSetElement&);

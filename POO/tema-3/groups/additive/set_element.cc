@@ -3,11 +3,11 @@
 namespace crypto {
 
 template<typename T>
-AdditiveSetElement<T>::AdditiveSetElement(T& el) : GenericSetElement<T>(el) {}
+AdditiveSetElement<T>::AdditiveSetElement(T& el) : utils::GenericGet<T&>(el) {}
 
 template<typename T>
 AdditiveSetElement<T>& AdditiveSetElement<T>::operator +=(const AdditiveSetElement& rhs) {
-    this->el_.get() += rhs.el_.get();
+    this->get().get() += rhs.get().get();
     return *this;
 }
 
@@ -18,7 +18,7 @@ AdditiveSetElement<T> AdditiveSetElement<T>::operator +(const AdditiveSetElement
 
 template<typename T>
 AdditiveSetElement<T>& AdditiveSetElement<T>::operator -=(const AdditiveSetElement& rhs) {
-    this->el_.get() -= rhs.el_.get();
+    this->get().get() -= rhs.get().get();
     return *this;
 }
 

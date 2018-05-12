@@ -10,7 +10,7 @@ namespace crypto {
 template<typename T>
 class BaseSetElement : public utils::GenericGet<T> {
   public:
-    BaseSetElement(const T);
+    BaseSetElement(const T el=T());
     virtual bool IsMember() = 0;
     virtual bool IsNull() = 0;
 };
