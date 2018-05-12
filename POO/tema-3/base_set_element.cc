@@ -18,4 +18,9 @@ std::ostream& operator <<(std::ostream& os, const BaseSetElement<T>& rhs) {
     return os << rhs.el_;
 }
 
+template<typename T>
+bool BaseSetElement<T>::operator ==(const BaseSetElement& rhs) {
+    return el_ == rhs.el_;
+}
+
 }  // namespace crpyto

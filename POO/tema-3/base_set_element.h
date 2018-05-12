@@ -23,6 +23,8 @@ class BaseSetElement {
 
     virtual bool IsMember() = 0;
 
+    bool operator ==(const BaseSetElement&);
+
   private:
     T el_;
 };

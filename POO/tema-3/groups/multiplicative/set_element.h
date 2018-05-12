@@ -1,8 +1,6 @@
 #ifndef _GROUPS_MULTIPLICATIVE_SET_ELEMENT_H_
 #define _GROUPS_MULTIPLICATIVE_SET_ELEMENT_H_
 
-#include <iostream>
-
 #include "../set_element.h"
 
 namespace crypto {
@@ -13,6 +11,8 @@ class MultiplicativeSetElement : public GenericSetElement<T> {
     MultiplicativeSetElement(T&);
     MultiplicativeSetElement<T>& operator *=(const MultiplicativeSetElement&);
     MultiplicativeSetElement<T> operator *(const MultiplicativeSetElement&) const;
+    MultiplicativeSetElement<T>& operator /=(const MultiplicativeSetElement&);
+    MultiplicativeSetElement<T> operator /(const MultiplicativeSetElement&) const;
 };
 
 }  // namespace crypto

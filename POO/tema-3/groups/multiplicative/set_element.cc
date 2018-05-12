@@ -17,4 +17,18 @@ MultiplicativeSetElement<T> MultiplicativeSetElement<T>::operator *(const Multip
     return MultiplicativeSetElement<T>(*this) *= rhs;
 }
 
+template<typename T>
+MultiplicativeSetElement<T>& MultiplicativeSetElement<T>::operator /=(const MultiplicativeSetElement& rhs) {
+    if (rhs.el_ == T(0)) {
+        throw std::overflow_error("Division by zero");
+    }
+    this->el_.get() /= rhs.el_.get();
+    return *this;
+}
+
+template<typename T>
+MultiplicativeSetElement<T> MultiplicativeSetElement<T>::operator /(const MultiplicativeSetElement& rhs) const {
+    return MultiplicativeSetElement<T>(*this) /= rhs;
+}
+
 }  // namespace crypto

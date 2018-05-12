@@ -1,5 +1,6 @@
 #ifndef _GROUPS_ADDITIVE_REAL_H_
 #define _GROUPS_ADDITIVE_REAL_H_
+
 #include "../../sets/real_number.h"
 #include "set_element.h"
 

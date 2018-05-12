@@ -8,7 +8,7 @@ namespace crypto {
 class RealNumber : public BaseSetElement<double> {
   public:
     RealNumber(const double el=0);
-    bool IsMember() override;
+    bool IsMember() final;
 };
 
 }  // namespace crypto

@@ -9,9 +9,11 @@
 
 namespace crypto {
 
-class RealFieldElement : public AdditiveReal, MultiplicativeReal {
+class RealFieldElement : public AdditiveReal, public MultiplicativeReal {
   public:
     RealFieldElement(const double el=0);
+
+    bool operator ==(const RealFieldElement&);
 
     friend std::ostream& operator <<(std::ostream&, const RealFieldElement&);
 
