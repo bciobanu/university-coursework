@@ -15,9 +15,6 @@ class GenericSetElement {
     GenericSetElement& operator =(GenericSetElement&&) = default;
     virtual ~GenericSetElement() = default;
 
-    template<typename U>
-    friend std::ostream& operator <<(std::ostream&, const GenericSetElement<U>&);
-
   protected:
     T& el_;
 

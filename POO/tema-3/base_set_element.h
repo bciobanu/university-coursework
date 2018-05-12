@@ -3,31 +3,16 @@
 
 #include <iostream>
 
+#include "utils/utils.h"
+
 namespace crypto {
 
 template<typename T>
-class BaseSetElement {
+class BaseSetElement : public utils::GenericGet<T> {
   public:
-    BaseSetElement(const T el=T());
-    BaseSetElement(const BaseSetElement&) = default;
-    BaseSetElement& operator =(const BaseSetElement&) = default;
-    BaseSetElement(BaseSetElement&&) = default;
-    BaseSetElement& operator =(BaseSetElement&&) = default;
-    virtual ~BaseSetElement() = default;
-
-    T const& get() const;
-    T& get();
-
-    template<typename U>
-    friend std::ostream& operator <<(std::ostream&, const BaseSetElement<U>&);
-
+    BaseSetElement(const T);
     virtual bool IsMember() = 0;
     virtual bool IsNull() = 0;
-
-    bool operator ==(const BaseSetElement&);
-
-  private:
-    T el_;
 };
 
 }  // namespace crypto
