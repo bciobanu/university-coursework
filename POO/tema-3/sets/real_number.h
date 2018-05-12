@@ -9,6 +9,7 @@ class RealNumber : public BaseSetElement<double> {
   public:
     RealNumber(const double el=0);
     bool IsMember() final;
+    bool IsNull() final;
 };
 
 }  // namespace crypto

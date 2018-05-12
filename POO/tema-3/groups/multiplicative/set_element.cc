@@ -19,7 +19,7 @@ MultiplicativeSetElement<T> MultiplicativeSetElement<T>::operator *(const Multip
 
 template<typename T>
 MultiplicativeSetElement<T>& MultiplicativeSetElement<T>::operator /=(const MultiplicativeSetElement& rhs) {
-    if (rhs.el_ == T(0)) {
+    if (rhs.el_.IsNull()) {
         throw std::overflow_error("Division by zero");
     }
     this->el_.get() /= rhs.el_.get();

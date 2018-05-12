@@ -22,6 +22,7 @@ class BaseSetElement {
     friend std::ostream& operator <<(std::ostream&, const BaseSetElement<U>&);
 
     virtual bool IsMember() = 0;
+    virtual bool IsNull() = 0;
 
     bool operator ==(const BaseSetElement&);
 
