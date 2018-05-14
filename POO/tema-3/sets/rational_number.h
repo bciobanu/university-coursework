@@ -4,17 +4,20 @@
 #include <iostream>
 
 #include "../base_set_element.h"
+#include "../base_set_datatype.h"
 
 namespace crypto {
 
-class Fraction {
+// CRTP
+class Fraction : public BaseSetDataType<Fraction> {
   using i64 = long long;
   public:
     Fraction(i64 numerator=0, i64 denominator=1);
     Fraction& operator *=(const Fraction&);
     Fraction& operator +=(const Fraction&);
-    Fraction operator *(const Fraction&) const;
-    Fraction operator +(const Fraction&) const;
+    Fraction& operator /=(const Fraction&);
+    Fraction& operator -=(const Fraction&);
+
     bool operator ==(const Fraction&) const;
     friend std::ostream& operator <<(std::ostream&, const Fraction&);
   private:

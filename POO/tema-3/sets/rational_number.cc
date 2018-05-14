@@ -16,10 +16,6 @@ Fraction& Fraction::operator *=(const Fraction& rhs) {
     return *this;
 }
 
-Fraction Fraction::operator *(const Fraction& rhs) const {
-    return Fraction(*this) *= rhs;
-}
-
 Fraction& Fraction::operator +=(const Fraction& rhs) {
     numerator_ = numerator_ * rhs.denominator_ + denominator_ * rhs.numerator_;
     denominator_ *= rhs.denominator_;
@@ -27,8 +23,12 @@ Fraction& Fraction::operator +=(const Fraction& rhs) {
     return *this;
 }
 
-Fraction Fraction::operator +(const Fraction& rhs) const {
-    return Fraction(*this) += rhs;
+Fraction& Fraction::operator /=(const Fraction& rhs) {
+    return *this *= Fraction(rhs.denominator_, rhs.numerator_);
+}
+
+Fraction& Fraction::operator -=(const Fraction& rhs) {
+    return *this += Fraction(-rhs.numerator_, rhs.denominator_);
 }
 
 bool Fraction::operator ==(const Fraction& rhs) const {
