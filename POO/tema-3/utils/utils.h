@@ -10,6 +10,9 @@ template<typename T>
 class GenericGet {
   public:
     GenericGet(const T el=T()) : el_(el) {}
+
+    template<typename... Args> GenericGet(Args&&... args) : el_(std::forward<Args>(args)...) {}
+
     GenericGet(const GenericGet&) = default;
     GenericGet(GenericGet&&) = default;
     GenericGet& operator =(const GenericGet&) = default;

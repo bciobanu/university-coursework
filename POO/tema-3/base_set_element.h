@@ -11,7 +11,9 @@ template<typename T>
 class BaseSetElement : public utils::GenericGet<T> {
   public:
     BaseSetElement(const T el=T());
-    virtual bool IsMember() = 0;
+
+    template<typename... Args> BaseSetElement(Args&&...);
+
     virtual bool IsNull() = 0;
 };
 

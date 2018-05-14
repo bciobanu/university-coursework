@@ -2,7 +2,7 @@
 
 namespace crypto {
 
-RealFieldElement::RealFieldElement(const double el) :
+RealFieldElement::RealFieldElement(const RealNumber el) :
         utils::GenericGet<RealNumber>(el),
         AdditiveReal(get()),
         MultiplicativeReal(get()) {}

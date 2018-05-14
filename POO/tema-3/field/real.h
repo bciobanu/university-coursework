@@ -10,6 +10,7 @@
 
 namespace crypto {
 
+// Mediator
 class RealFieldElement :
     public utils::GenericGet<RealNumber>,
     public AdditiveReal,
@@ -17,8 +18,7 @@ class RealFieldElement :
   public:
     using utils::GenericGet<RealNumber>::operator==;
     using utils::GenericGet<RealNumber>::get;
-    RealFieldElement(const double el=0);
-
+    RealFieldElement(const RealNumber el=0);
     friend std::ostream& operator <<(std::ostream&, const RealFieldElement&);
 };
 
