@@ -3,8 +3,8 @@
 
 #include <iostream>
 
-#include "../groups/additive/rational.h"
-#include "../groups/multiplicative/rational.h"
+#include "../groups/additive/set_element.h"
+#include "../groups/multiplicative/set_element.h"
 #include "../sets/rational_number.h"
 #include "../utils/utils.h"
 
@@ -13,8 +13,8 @@ namespace crypto {
 // Mediator
 class RationalFieldElement :
     public utils::GenericGet<RationalNumber>,
-    public AdditiveRational,
-    public MultiplicativeRational {
+    public AdditiveSetElement<RationalNumber>,
+    public MultiplicativeSetElement<RationalNumber> {
   public:
     using utils::GenericGet<RationalNumber>::operator==;
     using utils::GenericGet<RationalNumber>::get;

@@ -13,8 +13,8 @@ namespace crypto {
 // Mediator
 class RealFieldElement :
     public utils::GenericGet<RealNumber>,
-    public AdditiveReal,
-    public MultiplicativeReal {
+    public AdditiveSetElement<RealNumber>,
+    public MultiplicativeSetElement<RealNumber> {
   public:
     using utils::GenericGet<RealNumber>::operator==;
     using utils::GenericGet<RealNumber>::get;
