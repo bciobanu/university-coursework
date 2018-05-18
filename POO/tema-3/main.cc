@@ -1,13 +1,16 @@
-#include "field/rational.h"
+#include "field/generic.h"
+#include "field/fields.h"
+#include "sets/rational_number.h"
+#include "base_set_datatype.h"
+#include "utils/utils.h"
+
 #include <bits/stdc++.h>
 
 using namespace std;
 
 int main() {
-    crypto::RationalFieldElement x(1);
-    crypto::RationalFieldElement y(1);
+    crypto::IntegerFieldElement<int> x(10);
+    crypto::IntegerFieldElement<int> y(x);
     x += y;
-    cout << x << ' ' << y << endl;
-    cout << boolalpha << (x == y) << endl;
     return 0;
 }

@@ -3,35 +3,37 @@
 
 #include <iostream>
 
-#include "../base_set_element.h"
+#include "../utils/utils.h"
 #include "../base_set_datatype.h"
 
 namespace crypto {
 
 // CRTP
-class Fraction : public BaseSetDataType<Fraction> {
-  using i64 = long long;
+template <typename T>
+class Fraction : public BaseSetDataType<Fraction<T>> {
   public:
-    Fraction(i64 numerator=0, i64 denominator=1);
+    Fraction(T=0, T=1);
     Fraction& operator *=(const Fraction&);
     Fraction& operator +=(const Fraction&);
     Fraction& operator /=(const Fraction&);
     Fraction& operator -=(const Fraction&);
 
     bool operator ==(const Fraction&) const;
-    friend std::ostream& operator <<(std::ostream&, const Fraction&);
+
+    template <typename U>
+    friend std::ostream& operator <<(std::ostream&, const Fraction<U>&);
+
   private:
     void Normalize();
-    i64 numerator_, denominator_;
+
+    T numerator_, denominator_;
 };
 
-class RationalNumber : public BaseSetElement<Fraction> {
+template <typename T>
+class RationalNumber : public utils::GenericGet<Fraction<T>> {
+    static_assert(std::is_integral<T>::value, "Expects integer specialization");
   public:
-    RationalNumber(const Fraction);
-
-    template<typename... Args> RationalNumber(Args&&...);
-
-    bool IsNull() final;
+    using utils::GenericGet<Fraction<T>>::GenericGet;
 };
 
 }  // namespace crypto

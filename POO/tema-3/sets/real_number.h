@@ -1,17 +1,20 @@
 #ifndef _REAL_NUMBER_H_
 #define _REAL_NUMBER_H_
 
-#include "../base_set_element.h"
+#include <type_traits>
+
+#include "../utils/utils.h"
 
 namespace crypto {
 
-class RealNumber : public BaseSetElement<double> {
+template <typename T>
+class RealNumber : public utils::GenericGet<T> {
+    static_assert(std::is_floating_point<T>::value,
+        "Expects floating point specialization");
   public:
-    RealNumber(const double el=0);
-    bool IsNull() final;
+    using utils::GenericGet<T>::GenericGet;
 };
 
 }  // namespace crypto
 
-#include "real_number.cc"
 #endif  // _REAL_NUMBER_H_
