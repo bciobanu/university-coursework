@@ -1,6 +1,7 @@
 #include <numeric>    // std::gcd
 #include <stdexcept>  // std::logic_error
 #include <algorithm>  // std::swap
+#include <cctype>     // isdigit
 
 #include "mod_number.h"
 
@@ -62,6 +63,10 @@ ModInteger ModInteger::Inverse() const {
     return ModInteger((mod_ + u) % mod_);
 }
 
+ModInteger ModInteger::operator -() const {
+    return ModInteger(mod_ - el_);
+}
+
 bool ModInteger::operator ==(const ModInteger& rhs) const {
     return el_ == rhs.el_;
 }
@@ -71,7 +76,7 @@ std::ostream& operator <<(std::ostream& os, const ModInteger& rhs) {
 }
 
 std::istream& operator >>(std::istream& is, ModInteger& rhs) {
-    while (is.peek() < '-') {
+    while (not isdigit(is.peek()) and is.peek() != '-') {
         is.get();
     }
 
@@ -87,7 +92,10 @@ std::istream& operator >>(std::istream& is, ModInteger& rhs) {
     do {
         rhs *= ModInteger(10);
         rhs += ModInteger(is.get() - '0');
-    } while (is.peek() >= '0');
+    } while (isdigit(is.peek()));
+    if (sign) {
+        rhs = -rhs;
+    }
     return is;
 }
 

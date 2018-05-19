@@ -1,5 +1,6 @@
 #include "parser.h"
 
+#include <cctype>     // isdigit
 #include <algorithm>  // std::remove_if
 
 namespace crypto {
@@ -7,6 +8,17 @@ namespace crypto {
 template <typename T>
 T Parser<T>::Evaluate(std::string s) {
     s.erase(std::remove_if(s.begin(), s.end(), [](char x) { return std::isspace(x); }), s.end());
+    for (int i = 0; i < (int)s.length(); ++i) {
+        if (s[i] == 'i') {
+            int j = i - 1;
+            while (j >= 0 and isdigit(s[j])) {
+                s[j + 1] = s[j];
+                --j;
+            }
+            s[j + 1] = 'i';
+        }
+    }
+
     stream_.clear();
     stream_ << s;
     return Parse();

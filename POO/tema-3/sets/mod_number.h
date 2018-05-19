@@ -17,6 +17,7 @@ class ModInteger : public BaseSetDataType<ModInteger> {
     ModInteger& operator -=(const ModInteger&);
 
     ModInteger Inverse() const;
+    ModInteger operator -() const;
 
     bool operator ==(const ModInteger&) const;
 

@@ -7,25 +7,24 @@
 
 namespace crypto {
 
-template <typename T>
-std::istream& operator >>(std::istream& is, std::complex<T>& rhs) {
-    T aux; is >> aux;
-    rhs.real() = aux;
-    const std::streampos from = is.tellg();
-    is >> aux;
-    if (is.peek() != 'i') {
-        is.seekg(from);
-    } else {
-        is.get();
-        rhs.imag() = aux;
-    }
-    return is;
-}
-
-template <typename T>
-class ComplexNumber : public utils::GenericGet<std::complex<T>> {
+template <typename U>
+class ComplexNumber : public utils::GenericGet<std::complex<U>> {
   public:
-    using utils::GenericGet<std::complex<T>>::GenericGet;
+    using utils::GenericGet<std::complex<U>>::GenericGet;
+
+    template <typename T>
+    friend std::istream& operator >>(std::istream& is, ComplexNumber<T>& rhs) {
+        T r(0), i(0);
+        if (is.peek() == 'i') {
+            is.get();
+            is >> i;
+        } else {
+            is >> r;
+       }
+        rhs.get() = std::complex<T>(r, i);
+        return is;
+    }
+
 };
 
 }  // namespace crypto
