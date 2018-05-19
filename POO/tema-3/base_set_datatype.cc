@@ -2,28 +2,28 @@
 
 namespace cryto {
 
-template<typename DerivedDataType>
+template <typename DerivedDataType>
 DerivedDataType operator +(
         const crypto::BaseSetDataType<DerivedDataType>& lhs,
         const crypto::BaseSetDataType<DerivedDataType>& rhs) {
     return DerivedDataType(lhs) += rhs;
 }
 
-template<typename DerivedDataType>
+template <typename DerivedDataType>
 DerivedDataType operator -(
         const crypto::BaseSetDataType<DerivedDataType>& lhs,
         const crypto::BaseSetDataType<DerivedDataType>& rhs) {
     return DerivedDataType(lhs) -= rhs;
 }
 
-template<typename DerivedDataType>
+template <typename DerivedDataType>
 DerivedDataType operator *(
         const crypto::BaseSetDataType<DerivedDataType>& lhs,
         const crypto::BaseSetDataType<DerivedDataType>& rhs) {
     return DerivedDataType(lhs) *= rhs;
 }
 
-template<typename DerivedDataType>
+template <typename DerivedDataType>
 DerivedDataType operator /(
         const crypto::BaseSetDataType<DerivedDataType>& lhs,
         const crypto::BaseSetDataType<DerivedDataType>& rhs) {

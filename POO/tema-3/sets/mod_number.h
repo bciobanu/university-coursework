@@ -10,7 +10,7 @@ namespace crypto {
 
 class ModInteger : public BaseSetDataType<ModInteger> {
   public:
-    ModInteger(int el=0);
+    explicit ModInteger(int);
     ModInteger& operator *=(const ModInteger&);
     ModInteger& operator +=(const ModInteger&);
     ModInteger& operator /=(const ModInteger&);

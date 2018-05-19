@@ -3,7 +3,7 @@
 
 namespace crypto {
 
-template<typename DerivedDataType>
+template <typename DerivedDataType>
 class BaseSetDataType {
   public:
     virtual DerivedDataType& operator +=(const DerivedDataType&) = 0;

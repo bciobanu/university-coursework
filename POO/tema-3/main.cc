@@ -4,10 +4,15 @@
 using namespace std;
 
 int main() {
-    crypto::ModInteger::SetModulo(666013);
-    crypto::ModFieldElement x(10);
-    crypto::ModFieldElement y(x);
-    x += y;
+    vector<vector<int>> plus = {{0, 1}, {1, 0}};
+    vector<vector<int>> times = {{0, 0}, {0, 1}};
+
+    crypto::FiniteElement::Init(plus, times);
+
+    crypto::FiniteFieldElement x(1);
+    crypto::FiniteFieldElement y(1);
+    x *= y;
     cout << x << endl;
+
     return 0;
 }

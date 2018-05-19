@@ -6,7 +6,7 @@
 
 namespace crypto {
 
-int ModInteger::mod_;
+int ModInteger::mod_ = -1;
 
 void ModInteger::SetModulo(int mod) { mod_ = mod; }
 

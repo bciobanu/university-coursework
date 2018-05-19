@@ -8,6 +8,7 @@
 #include "../sets/mod_number.h"
 #include "../sets/real_number.h"
 #include "../sets/rational_number.h"
+#include "../sets/finite.h"
 
 #define DECLARE(NAME, TEMPLATE) \
 class NAME##FieldElement : public GenericFieldElement<NAME##Number TEMPLATE> { \
@@ -22,6 +23,7 @@ template <typename T> DECLARE(Complex, <T>);
 template <typename T> DECLARE(Real, <T>);
 template <typename T> DECLARE(Rational, <T>);
 DECLARE(Mod,);
+DECLARE(Finite,);
 
 }  // namespace crypto
 
