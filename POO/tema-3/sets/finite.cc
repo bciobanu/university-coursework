@@ -168,5 +168,11 @@ std::ostream& operator <<(std::ostream& os, const FiniteElement& rhs) {
     return os << rhs.el_;
 }
 
+std::istream& operator >>(std::istream& is, FiniteElement& rhs) {
+    int x; is >> x;
+    rhs = FiniteElement(x);
+    return is;
+}
+
 }  // namespace crypto
 

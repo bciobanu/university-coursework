@@ -10,7 +10,7 @@ namespace crypto {
 
 class ModInteger : public BaseSetDataType<ModInteger> {
   public:
-    explicit ModInteger(int);
+    ModInteger(int=0);
     ModInteger& operator *=(const ModInteger&);
     ModInteger& operator +=(const ModInteger&);
     ModInteger& operator /=(const ModInteger&);
@@ -21,6 +21,7 @@ class ModInteger : public BaseSetDataType<ModInteger> {
     bool operator ==(const ModInteger&) const;
 
     friend std::ostream& operator <<(std::ostream&, const ModInteger&);
+    friend std::istream& operator >>(std::istream&, ModInteger&);
 
     static void SetModulo(int);
 

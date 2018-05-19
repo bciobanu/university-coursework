@@ -8,9 +8,14 @@ namespace crypto {
 
 int ModInteger::mod_ = -1;
 
-void ModInteger::SetModulo(int mod) { mod_ = mod; }
+void ModInteger::SetModulo(int mod) {
+    if (mod <= 0 || (mod > (1 << 30))) {
+        throw std::out_of_range("Modulus out of range");
+    }
+    mod_ = mod;
+}
 
-ModInteger::ModInteger(const int el) {
+ModInteger::ModInteger(int el) {
     if (mod_ == -1) {
         throw std::logic_error("Modulo not set");
     }
@@ -63,6 +68,27 @@ bool ModInteger::operator ==(const ModInteger& rhs) const {
 
 std::ostream& operator <<(std::ostream& os, const ModInteger& rhs) {
     return os << rhs.el_;
+}
+
+std::istream& operator >>(std::istream& is, ModInteger& rhs) {
+    while (is.peek() < '-') {
+        is.get();
+    }
+
+    bool sign;
+    if (is.peek() == '-') {
+        sign = true;
+        is.get();
+    } else {
+        sign = false;
+    }
+
+    rhs = ModInteger(0);
+    do {
+        rhs *= ModInteger(10);
+        rhs += ModInteger(is.get() - '0');
+    } while (is.peek() >= '0');
+    return is;
 }
 
 }  // namespace crypto

@@ -49,6 +49,9 @@ class GenericGet : public crypto::BaseSetDataType<GenericGet<T>> {
     template <typename U>
     friend std::ostream& operator <<(std::ostream& os, const GenericGet<U>& rhs) { return os << rhs.get(); }
 
+    template <typename U>
+    friend std::istream& operator >>(std::istream& is, GenericGet<U>& rhs) { return is >> rhs.get(); }
+
     bool operator ==(const GenericGet& rhs) { return el_ == rhs.el_; }
 
   private:

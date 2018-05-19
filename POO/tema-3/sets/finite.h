@@ -17,7 +17,7 @@ class FiniteElement : public BaseSetDataType<FiniteElement> {
     static void Init(const IntMatrix&, const IntMatrix&);
     static int Cardinal();
 
-    explicit FiniteElement(int);
+    FiniteElement(int=zero_);
 
     FiniteElement& operator +=(const FiniteElement&);
     FiniteElement& operator -=(const FiniteElement&);
@@ -27,6 +27,7 @@ class FiniteElement : public BaseSetDataType<FiniteElement> {
     bool operator ==(const FiniteElement&);
 
     friend std::ostream& operator <<(std::ostream&, const FiniteElement&);
+    friend std::istream& operator >>(std::istream&, FiniteElement&);
 
   private:
     static IntMatrix plus_, times_;

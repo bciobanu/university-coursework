@@ -13,6 +13,7 @@ class GenericFieldElement : public utils::GenericGet<T> {
     static_assert(utils::IsBaseOf<BaseSetDataType, T>::value,
         "Expects field arithmetic");
   public:
+    using utils::GenericGet<T>::GenericGet;
     template <
         typename Head, typename... Tail,
         typename = std::enable_if_t <

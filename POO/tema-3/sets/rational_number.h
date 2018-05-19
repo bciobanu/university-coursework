@@ -8,11 +8,10 @@
 
 namespace crypto {
 
-// CRTP
 template <typename T>
 class Fraction : public BaseSetDataType<Fraction<T>> {
   public:
-    explicit Fraction(T=0, T=1);
+    Fraction(T=0, T=1);
     Fraction& operator *=(const Fraction&);
     Fraction& operator +=(const Fraction&);
     Fraction& operator /=(const Fraction&);
@@ -22,6 +21,9 @@ class Fraction : public BaseSetDataType<Fraction<T>> {
 
     template <typename U>
     friend std::ostream& operator <<(std::ostream&, const Fraction<U>&);
+
+    template <typename U>
+    friend std::istream& operator >>(std::istream&, Fraction<U>&);
 
   private:
     void Normalize();

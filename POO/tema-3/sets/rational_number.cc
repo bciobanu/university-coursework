@@ -51,6 +51,15 @@ std::ostream& operator <<(std::ostream& os, const Fraction<T>& rhs) {
 }
 
 template <typename T>
+std::istream& operator >>(std::istream& is, Fraction<T>& rhs) {
+    is >> rhs.numerator_;
+    is.get();
+    is >> rhs.denominator_;
+    rhs.Normalize();
+    return is;
+}
+
+template <typename T>
 void Fraction<T>::Normalize() {
     if (denominator_ < static_cast<T>(0)) {
         numerator_ = -numerator_;

@@ -1,18 +1,118 @@
 #include "field/fields.h"
-#include <bits/stdc++.h>
+#include "parser.h"
+#include <iostream>  // std::cout, std::cin
+#include <iomanip>   // std::setw
+#include <string>    // std::getline
 
 using namespace std;
 
+constexpr int kNumOptions = 7;
+constexpr char kOptions[kNumOptions][21] = {
+    "Iesire",
+    "Operatii pe C",
+    "Operatii pe R",
+    "Operatii pe Q",
+    "Operatii pe Z",
+    "Operatii pe Z/nZ",
+    "Operatii pe corp dat"
+};
+
+void ClearTerminal() {
+    cout << "\033c";
+}
+
 int main() {
-    vector<vector<int>> plus = {{0, 1}, {1, 0}};
-    vector<vector<int>> times = {{0, 0}, {0, 1}};
+    while (true) {
+        cout << "Optiuni:" << endl;
+        for (int i = 0; i < kNumOptions; ++i) {
+            cout << right << setw(10) << '(' << i + 1 << ')' << setw(22) << kOptions[i] << endl;
+        }
 
-    crypto::FiniteElement::Init(plus, times);
+        int option; cin >> option;
+        ClearTerminal();
+        if (option <= 0 or option > kNumOptions) {
+            cout << "Optiune invalida..." << endl;
+            continue;
+        }
 
-    crypto::FiniteFieldElement x(1);
-    crypto::FiniteFieldElement y(1);
-    x *= y;
-    cout << x << endl;
+        if (option == 1) {
+            break;
+        }
 
+        if (option == 6) {
+            int n;
+            cout << "n = ? "; cout.flush();
+            cin >> n;
+            try {
+                crypto::ModInteger::SetModulo(n);
+            } catch (std::exception& e) {
+                ClearTerminal();
+                cout << e.what() << endl;
+                continue;
+            }
+        } else if (option == 7) {
+            cout << "Ordinul corpului = ? "; cout.flush();
+            int n; cin >> n;
+            vector<vector<int>> plus(n, vector<int>(n)), times(n, vector<int>(n));
+            cout << "Scrieti tabela adunarii (NxN)" << endl;
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    cin >> plus[i][j];
+                }
+            }
+
+            cout << "Scrieti tabela inmultirii (NxN)" << endl;
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    cin >> times[i][j];
+                }
+            }
+
+            try {
+                crypto::FiniteElement::Init(plus, times);
+            } catch (std::exception& e) {
+                ClearTerminal();
+                cout << e.what() << endl;
+                continue;
+            }
+        }
+
+        ClearTerminal();
+        cout << "Scrieti o expresie sau \"exit\" daca vreti sa iesiti" << endl;
+        while (true) {
+            string expression;
+            do {
+                getline(cin, expression);
+            } while (expression.empty() or expression.front() == '\n');
+
+            if (expression.find("exit") != string::npos) {
+                break;
+            }
+
+            try {
+                cout << "= ";
+                #define ADD(CLASS, T, OPTION) \
+                case OPTION: \
+                    static crypto::Parser<crypto::CLASS##FieldElement T> __parser__##OPTION; \
+                    cout << __parser__##OPTION.Evaluate(expression); \
+                    break
+
+                switch (option) {
+                    ADD(Complex, <double>, 2);
+                    ADD(Real, <double>, 3);
+                    ADD(Rational, <long long>, 4);
+                    ADD(Integer, <long long>, 5);
+                    ADD(Mod, , 6);
+                    ADD(Finite, , 7);
+                }
+                #undef ADD
+
+                cout << std::endl;
+            } catch (std::exception& e) {
+                cout << "\rOops.. something went wrong" << std::endl;
+            }
+        }
+
+    }
     return 0;
 }
