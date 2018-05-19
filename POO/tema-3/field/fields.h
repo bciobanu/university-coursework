@@ -9,19 +9,19 @@
 #include "../sets/real_number.h"
 #include "../sets/rational_number.h"
 
-#define DECLARE(NAME, T) \
-class NAME##FieldElement : public GenericFieldElement<NAME##Number<T>> { \
+#define DECLARE(NAME, TEMPLATE) \
+class NAME##FieldElement : public GenericFieldElement<NAME##Number TEMPLATE> { \
   public: \
-    using GenericFieldElement<NAME##Number<T>>::GenericFieldElement; \
+    using GenericFieldElement<NAME##Number TEMPLATE>::GenericFieldElement; \
 }
 
 namespace crypto {
 
-template <typename T> DECLARE(Integer, T);
-template <typename T> DECLARE(Complex, T);
-template <int modulo> DECLARE(Mod, modulo);
-template <typename T> DECLARE(Real, T);
-template <typename T> DECLARE(Rational, T);
+template <typename T> DECLARE(Integer, <T>);
+template <typename T> DECLARE(Complex, <T>);
+template <typename T> DECLARE(Real, <T>);
+template <typename T> DECLARE(Rational, <T>);
+DECLARE(Mod,);
 
 }  // namespace crypto
 

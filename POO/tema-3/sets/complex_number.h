@@ -7,7 +7,7 @@
 
 namespace crypto {
 
-template<typename T>
+template <typename T>
 class ComplexNumber : public utils::GenericGet<std::complex<T>> {
   public:
     using utils::GenericGet<std::complex<T>>::GenericGet;

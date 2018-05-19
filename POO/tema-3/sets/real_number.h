@@ -9,8 +9,7 @@ namespace crypto {
 
 template <typename T>
 class RealNumber : public utils::GenericGet<T> {
-    static_assert(std::is_floating_point<T>::value,
-        "Expects floating point specialization");
+    static_assert(std::is_floating_point_v<T>, "Expects floating point specialization");
   public:
     using utils::GenericGet<T>::GenericGet;
 };

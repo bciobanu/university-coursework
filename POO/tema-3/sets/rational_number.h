@@ -31,7 +31,7 @@ class Fraction : public BaseSetDataType<Fraction<T>> {
 
 template <typename T>
 class RationalNumber : public utils::GenericGet<Fraction<T>> {
-    static_assert(std::is_integral<T>::value, "Expects integer specialization");
+    static_assert(std::is_integral_v<T>, "Expects integer specialization");
   public:
     using utils::GenericGet<Fraction<T>>::GenericGet;
 };

@@ -8,9 +8,7 @@
 
 namespace crypto {
 
-// CRTP
-template<int mod>
-class ModInteger : public BaseSetDataType<ModInteger<mod>> {
+class ModInteger : public BaseSetDataType<ModInteger> {
   public:
     ModInteger(int el=0);
     ModInteger& operator *=(const ModInteger&);
@@ -22,17 +20,18 @@ class ModInteger : public BaseSetDataType<ModInteger<mod>> {
 
     bool operator ==(const ModInteger&) const;
 
-    template<int m>
-    friend std::ostream& operator <<(std::ostream&, const ModInteger<m>&);
+    friend std::ostream& operator <<(std::ostream&, const ModInteger&);
+
+    static void SetModulo(int);
 
   private:
+    static int mod_;
     int el_;
 };
 
-template<int mod>
-class ModNumber : public utils::GenericGet<ModInteger<mod>> {
+class ModNumber : public utils::GenericGet<ModInteger> {
   public:
-    using utils::GenericGet<ModInteger<mod>>::GenericGet;
+    using utils::GenericGet<ModInteger>::GenericGet;
 };
 
 }  // namespace crypto

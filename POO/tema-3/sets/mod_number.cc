@@ -6,60 +6,62 @@
 
 namespace crypto {
 
-template<int mod>
-ModInteger<mod>::ModInteger(const int el) : el_(el % mod) {}
+int ModInteger::mod_;
 
-template<int mod>
-ModInteger<mod>& ModInteger<mod>::operator +=(const ModInteger& rhs) {
+void ModInteger::SetModulo(int mod) { mod_ = mod; }
+
+ModInteger::ModInteger(const int el) {
+    if (mod_ == -1) {
+        throw std::logic_error("Modulo not set");
+    }
+    el_ = el % mod_;
+}
+
+ModInteger& ModInteger::operator +=(const ModInteger& rhs) {
     el_ += rhs.el_;
-    if (el_ >= mod) {
-        el_ -= mod;
+    if (el_ >= mod_) {
+        el_ -= mod_;
     }
     return *this;
 }
 
-template<int mod>
-ModInteger<mod>& ModInteger<mod>::operator -=(const ModInteger& rhs) {
+ModInteger& ModInteger::operator -=(const ModInteger& rhs) {
     el_ -= rhs.el_;
     if (el_ < 0) {
-        el_ += mod;
+        el_ += mod_;
     }
     return *this;
 }
 
-template<int mod>
-ModInteger<mod>& ModInteger<mod>::operator *=(const ModInteger& rhs) {
-    el_ = ((long long)el_ * rhs.el_) % mod;
+ModInteger& ModInteger::operator *=(const ModInteger& rhs) {
+    el_ = ((long long)el_ * rhs.el_) % mod_;
     return *this;
 }
 
-template<int mod>
-ModInteger<mod>& ModInteger<mod>::operator /=(const ModInteger& rhs) {
-    if (std::gcd(rhs.el_, mod) != 1) {
+ModInteger& ModInteger::operator /=(const ModInteger& rhs) {
+    if (std::gcd(rhs.el_, mod_) != 1) {
         throw std::logic_error("rhs is not invertible");
     }
+
     return *this *= rhs.Inverse();
 }
 
-template<int mod>
-ModInteger<mod> ModInteger<mod>::Inverse() const {
-    int x = el_, y = mod;
+ModInteger ModInteger::Inverse() const {
+    int x = el_, y = mod_;
     int u = 1, v = 0;
     while (y > 0) {
         const int d = x / y;
         x -= d * y; std::swap(x, y);
         u -= d * v; std::swap(u, v);
     }
-    return ModInteger((mod + u) % mod);
+    return ModInteger((mod_ + u) % mod_);
 }
 
-template<int mod>
-bool ModInteger<mod>::operator ==(const ModInteger& rhs) const {
+bool ModInteger::operator ==(const ModInteger& rhs) const {
     return el_ == rhs.el_;
 }
 
-template<int mod>
-std::ostream& operator <<(std::ostream& os, const ModInteger<mod>& rhs) {
+std::ostream& operator <<(std::ostream& os, const ModInteger& rhs) {
     return os << rhs.el_;
 }
 

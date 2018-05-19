@@ -7,9 +7,9 @@
 
 namespace crypto {
 
-template<typename T>
+template <typename T>
 class IntegerNumber : public utils::GenericGet<T> {
-    static_assert(std::is_integral<T>::value, "Expects integer data type");
+    static_assert(std::is_integral_v<T>, "Expects integer data type");
   public:
     using utils::GenericGet<T>::GenericGet;
 };
