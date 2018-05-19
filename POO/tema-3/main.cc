@@ -1,8 +1,8 @@
 #include "field/fields.h"
 #include "parser.h"
-#include <iostream>  // std::cout, std::cin
-#include <iomanip>   // std::setw
-#include <string>    // std::getline
+#include <iostream>  // cout, cin
+#include <iomanip>   // setw
+#include <string>    // getline
 
 using namespace std;
 
@@ -45,7 +45,7 @@ int main() {
             cin >> n;
             try {
                 crypto::ModInteger::SetModulo(n);
-            } catch (std::exception& e) {
+            } catch (exception& e) {
                 ClearTerminal();
                 cout << e.what() << endl;
                 continue;
@@ -70,7 +70,7 @@ int main() {
 
             try {
                 crypto::FiniteElement::Init(plus, times);
-            } catch (std::exception& e) {
+            } catch (exception& e) {
                 ClearTerminal();
                 cout << e.what() << endl;
                 continue;
@@ -107,9 +107,9 @@ int main() {
                 }
                 #undef ADD
 
-                cout << std::endl;
-            } catch (std::exception& e) {
-                cout << "\rOops.. something went wrong" << std::endl;
+                cout << endl;
+            } catch (exception& e) {
+                cout << "\rOops.. something went wrong" << endl;
             }
         }
 
