@@ -20,7 +20,7 @@ class ComplexNumber : public utils::GenericGet<std::complex<U>> {
             is >> i;
         } else {
             is >> r;
-       }
+        }
         rhs.get() = std::complex<T>(r, i);
         return is;
     }

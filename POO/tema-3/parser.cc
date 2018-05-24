@@ -11,7 +11,7 @@ T Parser<T>::Evaluate(std::string s) {
     for (int i = 0; i < (int)s.length(); ++i) {
         if (s[i] == 'i') {
             int j = i - 1;
-            while (j >= 0 and isdigit(s[j])) {
+            while (j >= 0 and (isdigit(s[j]) or s[j] == '.')) {
                 s[j + 1] = s[j];
                 --j;
             }
