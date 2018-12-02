@@ -1,0 +1,10 @@
+body {
+  background-color: #2D2D2D;
+}
+
+p.sum-info {
+  font-family: 'Roboto', sans-serif;
+  font-size: 48px;
+  color:#B7B6C1;
+  display:inline;
+}
