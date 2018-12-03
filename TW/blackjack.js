@@ -1,4 +1,5 @@
 const NUM_CARDS = 52
+const DOM_DELAY = 10
 
 class Card {
   constructor(id) {
@@ -45,63 +46,99 @@ class Deck {
 class Player {
   constructor(sumTextId) {
     this.sum = 0;
-    this.sumTextId = sumTextId;
+    this.sumText = document.getElementById(sumTextId);
+    this.sumText.innerHTML = 0;
   }
   
   hit(card) {
     this.sum += card.value;
-    document.getElementById(this.sumTextId).innerHTML = this.sum;
-  }
-  
-  stand() {
-    this.stands = true;
+    this.sumText.innerHTML = this.sum;
   }
 }
 
-function game() {
-  const myDeck = new Deck();
-  const user   = new Player("user_sum");
-  const dealer = new Player("dealer_sum");
+function createButton(div, text, id, callback) {
+  var button = document.createElement("button");
+  button.innerHTML = text;
+  button.id = id;
+  button.addEventListener('click', callback, false);
+  div.appendChild(button);
+  return button;
+}
+
+var myDeck, user, dealer;
+var dealButton, hitButton, standButton;
+var userDiv;
+
+function userMoves() {
+  userDiv.removeChild(dealButton);
   
   for (var i = 0; i < 2; ++i) {
     user.hit(myDeck.deal());
     dealer.hit(myDeck.deal());
   }
   
-  var step = 0;
-  while (!user.stands || !dealer.stands) {
-    if (step == 0 && !user.stands) {  // user step
-      if (Math.random() < 0.5) {
-        user.stand();
-      } else {
-        user.hit(myDeck.deal());
-        if (user.sum > 21) {
-          return 1;
-        }
-      }
-    } else {
-      if (dealer.sum < 17) {  // should hit iff their sum is less than 17
-        dealer.hit(myDeck.deal());
-        if (dealer.sum > 21) {
-          return -1;
-        }
-      } else {
-        dealer.stand();
-      }
-    }
-    step ^= 1;
+  if (user.sum == 21) {
+    finishGame();
+    return;
   }
   
-  return Math.sign(dealer.sum - user.sum);
+  hitButton = createButton(userDiv, "HIT", "hit-button", function() { 
+    user.hit(myDeck.deal()); 
+    if (user.sum >= 21) {
+      finishGame();
+    }
+  });
+  
+  standButton = createButton(userDiv, "STAND", "stand-button", function() { 
+    finishGame(); 
+  });
 }
 
-function drawInitial() {}
+function printResults(res) {
+  window.alert(res == 1 ? "LOST" : (res == 0 ? "TIED" : "WON"));
+}
 
-function main() {
-  drawInitial();
-  console.log(game());
+function finishGame() {
+  var endFunction = function(res) {
+    setTimeout(function() {
+      printResults(res);
+      resetGame();
+    }, DOM_DELAY);
+  };
+  
+  if (user.sum > 21) {
+    endFunction(1);
+    return;
+  }
+  
+  while (dealer.sum < 17) {
+    dealer.hit(myDeck.deal());
+  }
+  
+  endFunction((dealer.sum > 21) ? -1 : Math.sign(dealer.sum - user.sum));
+}
+
+function resetGame() {
+  try {
+    userDiv.removeChild(hitButton);
+    userDiv.removeChild(standButton);
+  } catch (err) {
+  }
+  
+  myDeck = new Deck();
+  user   = new Player("user-sum");
+  dealer = new Player("dealer-sum");
+  
+  dealButton = createButton(userDiv, "DEAL", "deal-button", function() {
+    userMoves();
+  });
+}
+
+function init() {
+  userDiv = document.getElementById("user");
 }
 
 window.onload = function() {
-  main();
+  init();
+  resetGame();
 }
