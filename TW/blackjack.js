@@ -8,9 +8,6 @@ class Card {
   
   get value() {
     var type = Math.floor(this.id / 4);
-    if (type == 0) {  // ace
-      return 11;
-    }
     if (type > 9) {  // face card
       return 10;
     }
@@ -114,7 +111,6 @@ function finishGame() {
   while (dealer.sum < 17) {
     dealer.hit(myDeck.deal());
   }
-  
   endFunction((dealer.sum > 21) ? -1 : Math.sign(dealer.sum - user.sum));
 }
 
@@ -135,7 +131,7 @@ function resetGame() {
 }
 
 function init() {
-  userDiv = document.getElementById("user");
+  userDiv = document.getElementById("user-buttons");
 }
 
 window.onload = function() {
