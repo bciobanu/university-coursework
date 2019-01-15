@@ -1,0 +1,22 @@
+{
+  "name": "book-store",
+  "version": "1.0.0",
+  "description": "Homework project for Frontend course",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Not implemented\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bciobanu/Book-Store.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bciobanu/Book-Store/issues"
+  },
+  "homepage": "https://github.com/bciobanu/Book-Store#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
