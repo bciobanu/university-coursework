@@ -5,6 +5,8 @@ from collections import deque
 
 class Automaton:
     LINK_FORMAT = "https://chart.googleapis.com/chart?cht=gv&chl=digraph{0}"
+    EDGE_FORMAT = "{0}->{1} {2}\n"
+    LINK_DATA_FORMAT = '{0}->{1}[label="{2}"];'
 
     class Node:
         LAMBDA = "λ"
@@ -62,8 +64,9 @@ class Automaton:
         while len(q) > 0:
             node = q.popleft()
             for adj, ch in node.transitions:
-                s += f"{get_index(node)} {get_index(adj)} {ch}\n"
-                link_data += f'{get_index(node)}->{get_index(adj)}[label="{ch}"];'
+                edge = (get_index(node), get_index(adj), ch)
+                s += Automaton.EDGE_FORMAT.format(*edge)
+                link_data += Automaton.LINK_DATA_FORMAT.format(*edge)
                 q.append(adj)
         link_data = link_data[:-1] + "}"
         image_link = Automaton.LINK_FORMAT.format(link_data)
