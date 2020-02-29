@@ -4,6 +4,8 @@ from collections import deque
 
 
 class Automaton:
+    LINK_FORMAT = "https://chart.googleapis.com/chart?cht=gv&chl=digraph{0}"
+
     class Node:
         LAMBDA = "λ"
 
@@ -56,12 +58,17 @@ class Automaton:
 
         q = deque([self.start_node])
         s = ""
+        link_data = "{"
         while len(q) > 0:
             node = q.popleft()
             for adj, ch in node.transitions:
-                s += f"\n{get_index(node)} {get_index(adj)} {ch}"
+                s += f"{get_index(node)} {get_index(adj)} {ch}\n"
+                link_data += f'{get_index(node)}->{get_index(adj)}[label="{ch}"];'
                 q.append(adj)
-        return s[1:]
+        link_data = link_data[:-1] + "}"
+        image_link = Automaton.LINK_FORMAT.format(link_data)
+        s += f"Imagine: {image_link}"
+        return s
 
 
 class Solver:
@@ -115,8 +122,7 @@ def parse_args():
 
 def main():
     args = parse_args()
-    expr = args.regex
-    print(Solver(expr).parse())
+    print(Solver(args.regex).parse())
 
 
 if __name__ == "__main__":
