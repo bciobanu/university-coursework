@@ -41,12 +41,9 @@ class Automaton:
         return self
 
     def wildcard(self):
-        new_start = Automaton.Node()
-        new_end = Automaton.Node()
-        new_start.add_transition(self.start_node)
-        new_start.add_transition(new_end)
+        self.start_node.add_transition(self.final_node)
         self.final_node.add_transition(self.start_node)
-        self.final_node.add_transition(new_end)
+        return self
 
     def __repr__(self):
         def get_index(node):
@@ -59,6 +56,7 @@ class Automaton:
         get_index.index = 0
 
         q = deque([self.start_node])
+        visited = {self.start_node}
         s = ""
         link_data = "{"
         while len(q) > 0:
@@ -67,7 +65,11 @@ class Automaton:
                 edge = (get_index(node), get_index(adj), ch)
                 s += Automaton.EDGE_FORMAT.format(*edge)
                 link_data += Automaton.LINK_DATA_FORMAT.format(*edge)
-                q.append(adj)
+                if adj not in visited:
+                    visited.add(adj)
+                    q.append(adj)
+        s += f"Nod start: {get_index(self.start_node)}\n"
+        s += f"Nod final: {get_index(self.final_node)}\n"
         link_data = link_data[:-1] + "}"
         image_link = Automaton.LINK_FORMAT.format(link_data)
         s += f"Imagine: {image_link}"
