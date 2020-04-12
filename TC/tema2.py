@@ -1,8 +1,19 @@
 #!/usr/bin/env python3
-import sys
+import logging
 from collections import deque
 from enum import Enum, auto
-from typing import NamedTuple, List, Set, Tuple, Optional, Dict, Union, FrozenSet
+from typing import (Dict, FrozenSet, List, NamedTuple, Optional, Set, Tuple,
+                    Union)
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+
+def init_logger() -> None:
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
 
 
 class SymbolType(Enum):
@@ -74,17 +85,19 @@ class Automaton(NamedTuple):
 
 
 class Shift(NamedTuple):
-    state: int
+    state: Node
+    state_index: int
 
     def __str__(self) -> str:
-        return str(self.state)
+        return f"S{self.state_index}"
 
 
 class Reduce(NamedTuple):
     production: Production
+    production_index: int
 
     def __str__(self) -> str:
-        return "R " + str(self.production)
+        return f"R{self.production_index}"
 
 
 class Accept:
@@ -92,8 +105,14 @@ class Accept:
         return "A"
 
 
-ParseTableElement = Union[Shift, Reduce, Accept, None]
-ParseTable = List[Dict[Symbol, ParseTableElement]]
+class TableRow(dict):
+    def __setitem__(self, key: Symbol, value: Union[Shift, Reduce, Accept]) -> None:
+        if key in self:
+            raise KeyError
+        dict.__setitem__(self, key, value)
+
+
+ParseTable = Dict[Node, TableRow]
 
 
 def lambda_closure(initial: Node, grammar: Grammar) -> Node:
@@ -132,6 +151,10 @@ def build_dfa(grammar: Grammar) -> Automaton:
     bfq, qhead = [initial_state], 0
     while qhead != len(bfq):
         node = bfq[qhead]
+        logging.debug(
+            f"Node {qhead}:\n" + "".join(str(lr0item) + "\n" for lr0item in node)
+        )
+
         qhead += 1
         for symbol in grammar.symbols:
             adj = goto(node, symbol, grammar)
@@ -187,6 +210,12 @@ def build_first(grammar: Grammar) -> Dict[Symbol, Set[Symbol]]:
         if first == next_first:
             break
         first = next_first
+
+    for from_symbol, to_symbols in first.items():
+        logging.debug(
+            f"First({from_symbol}) = "
+            + "".join(str(to_symbol) for to_symbol in to_symbols)
+        )
     return first
 
 
@@ -205,12 +234,6 @@ def build_follow(
                 follow[production.result[index]] |= join_first(
                     first, production.result[index + 1 :]
                 ) - {LAMBDA_SYMBOL}
-
-    for from_symbol, to_symbols in follow.items():
-        print(
-            f"Follow {from_symbol} = {''.join(str(to_symbol) for to_symbol in to_symbols)}"
-        )
-    print("")
 
     def step(
         grammar: Grammar,
@@ -233,29 +256,27 @@ def build_follow(
         if follow == next_follow:
             break
         follow = next_follow
+
+    for from_symbol, to_symbols in follow.items():
+        logging.debug(
+            f"Follow({from_symbol}) = "
+            + "".join(str(to_symbol) for to_symbol in to_symbols)
+        )
     return follow
 
 
 def build_table(dfa: Automaton, grammar: Grammar) -> Optional[ParseTable]:
-    node_idx = {state: idx for idx, state in enumerate(dfa.nodes)}
-
     first = build_first(grammar)
-    for from_symbol, to_symbols in first.items():
-        print(
-            f"First {from_symbol} = {''.join(str(to_symbol) for to_symbol in to_symbols)}"
-        )
-    print("")
-
     follow = build_follow(grammar, first)
-    for from_symbol, to_symbols in follow.items():
-        print(
-            f"Follow {from_symbol} = {''.join(str(to_symbol) for to_symbol in to_symbols)}"
-        )
-    print("")
 
-    table: ParseTable = []
+    node_indexer = {node: idx for idx, node in enumerate(dfa.nodes)}
+    production_indexer = {
+        production: idx for idx, production in enumerate(grammar.productions)
+    }
+
+    table: ParseTable = {}
     for state in dfa.nodes:
-        row: Dict[Symbol, ParseTableElement] = {}
+        row = TableRow()
         for lr0item in state:
             if (
                 lr0item.running_symbol is grammar.start_symbol
@@ -264,26 +285,43 @@ def build_table(dfa: Automaton, grammar: Grammar) -> Optional[ParseTable]:
                 row[lr0item.running_symbol] = Accept()
             elif lr0item.running_symbol is not None:
                 if lr0item.running_symbol.type is SymbolType.TERMINAL:
-                    if lr0item.running_symbol in row:
-                        return None
-
-                    row[lr0item.running_symbol] = Shift(
-                        state=node_idx[dfa.edges[(state, lr0item.running_symbol)]]
+                    shift_state = dfa.edges[(state, lr0item.running_symbol)]
+                    cell = Shift(
+                        state=shift_state, state_index=node_indexer[shift_state]
                     )
+                    try:
+                        row[lr0item.running_symbol] = cell
+                    except KeyError:
+                        return None
             elif lr0item.production.initial in follow:
                 for follow_symbol in follow[lr0item.production.initial]:
-                    if follow_symbol in row:
+                    cell = Reduce(
+                        production=lr0item.production,
+                        production_index=production_indexer[lr0item.production],
+                    )
+                    try:
+                        row[follow_symbol] = cell
+                    except KeyError:
                         return None
-                    row[follow_symbol] = Reduce(production=lr0item.production)
 
         for non_terminal in grammar.symbols:
             if non_terminal.type is not SymbolType.NON_TERMINAL:
                 continue
             if (state, non_terminal) in dfa.edges:
+                shift_state = dfa.edges[(state, non_terminal)]
                 row[non_terminal] = Shift(
-                    state=node_idx[dfa.edges[(state, non_terminal)]]
+                    state=shift_state, state_index=node_indexer[shift_state]
                 )
-        table.append(row)
+        table[state] = row
+
+    logger.debug("\t".join(str(symbol) for symbol in grammar.symbols))
+    for row in table.values():
+        logger.debug(
+            "\t".join(
+                str(row[symbol]) if symbol in row else "." for symbol in grammar.symbols
+            )
+        )
+
     return table
 
 
@@ -299,6 +337,8 @@ def augment_grammar(grammar: Grammar) -> Grammar:
 
 
 def main() -> None:
+    init_logger()
+
     E = Symbol(id="E", type=SymbolType.NON_TERMINAL)
     T = Symbol(id="T", type=SymbolType.NON_TERMINAL)
     F = Symbol(id="F", type=SymbolType.NON_TERMINAL)
@@ -334,18 +374,6 @@ def main() -> None:
     grammar = augment_grammar(grammar)
     automaton = build_dfa(grammar)
     table = build_table(automaton, grammar)
-
-    for i, node in enumerate(automaton.nodes):
-        print(f"Node {i}:")
-        for lr0item in node:
-            print(lr0item)
-        print("")
-
-    print("\t".join(str(symbol) for symbol in grammar.symbols))
-    for row in table:
-        for symbol in grammar.symbols:
-            print(row[symbol] if symbol in row else ".", end="\t")
-        print("")
 
 
 if __name__ == "__main__":
