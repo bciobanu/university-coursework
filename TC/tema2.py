@@ -2,8 +2,7 @@
 import logging
 from collections import deque
 from enum import Enum, auto
-from typing import (Dict, FrozenSet, List, NamedTuple, Optional, Set, Tuple,
-                    Union)
+from typing import Dict, FrozenSet, List, NamedTuple, Optional, Set, Tuple, Union
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -336,44 +335,72 @@ def augment_grammar(grammar: Grammar) -> Grammar:
     )
 
 
+def read_grammar_and_queries() -> Tuple[Grammar, List[str]]:
+    """
+    E
+    T F
+    + * id ( )
+    E -> E + T
+    E -> T
+    T -> T * F
+    T -> F
+    F -> ( E )
+    F -> id
+    (id*id)
+    """
+    symbols: Dict[str, Symbol] = {}
+    symbols["λ"] = LAMBDA_SYMBOL
+
+    start_symbol = Symbol(id=input(), type=SymbolType.NON_TERMINAL)
+    symbols[start_symbol.id] = start_symbol
+    for symbol_type in (SymbolType.NON_TERMINAL, SymbolType.TERMINAL):
+        for symbol_id in input().split():
+            assert symbol_id != START_SYMBOL.id and symbol_id != END_SYMBOL.id
+            assert symbol_id not in symbols or symbols[symbol_id].type == symbol_type
+            assert symbol_id != "->"
+            symbols[symbol_id] = Symbol(id=symbol_id, type=symbol_type)
+
+    queries: List[str] = []
+    productions = []
+    while True:
+        try:
+            line = input()
+        except EOFError:
+            break
+        tokens = line.split()
+        if len(tokens) > 1 and tokens[1] == "->":
+            assert len(queries) == 0
+            productions.append(
+                Production(
+                    initial=symbols[tokens[0]],
+                    result=tuple(symbols[token] for token in tokens[2:]),
+                )
+            )
+        else:
+            assert len(tokens) == 1
+            queries.append(line)
+    del symbols[start_symbol.id]
+    return (
+        Grammar(
+            productions=productions,
+            symbols=list(symbols.values()),
+            start_symbol=start_symbol,
+        ),
+        queries,
+    )
+
+
 def main() -> None:
     init_logger()
 
-    E = Symbol(id="E", type=SymbolType.NON_TERMINAL)
-    T = Symbol(id="T", type=SymbolType.NON_TERMINAL)
-    F = Symbol(id="F", type=SymbolType.NON_TERMINAL)
-
-    plus = Symbol(id="+", type=SymbolType.TERMINAL)
-    star = Symbol(id="*", type=SymbolType.TERMINAL)
-    ids = Symbol(id="id", type=SymbolType.TERMINAL)
-    open_bracket = Symbol(id="(", type=SymbolType.TERMINAL)
-    closed_bracket = Symbol(id=")", type=SymbolType.TERMINAL)
-
-    """
-    1) E  -> E + T
-    2) E  -> T
-    3) T  -> T * F
-    4) T  -> F
-    5) F  -> ( E )
-    6) F  -> id
-    """
-
-    grammar = Grammar(
-        productions=[
-            Production(initial=E, result=(E, plus, T,)),
-            Production(initial=E, result=(T,)),
-            Production(initial=T, result=(T, star, F,)),
-            Production(initial=T, result=(F,)),
-            Production(initial=F, result=(open_bracket, E, closed_bracket,)),
-            Production(initial=F, result=(ids,)),
-        ],
-        symbols=[T, F, plus, star, ids, open_bracket, closed_bracket],
-        start_symbol=E,
-    )
-
+    grammar, queries = read_grammar_and_queries()
     grammar = augment_grammar(grammar)
     automaton = build_dfa(grammar)
     table = build_table(automaton, grammar)
+
+    if not table:
+        logger.warning("Not SLR(1)")
+        return
 
 
 if __name__ == "__main__":
