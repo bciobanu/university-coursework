@@ -278,10 +278,10 @@ def build_table(dfa: Automaton, grammar: Grammar) -> Optional[ParseTable]:
         row = TableRow()
         for lr0item in state:
             if (
-                lr0item.running_symbol is grammar.start_symbol
-                and lr0item.running_symbol == END_SYMBOL
+                lr0item.production.initial is grammar.start_symbol
+                and lr0item.running_symbol is None
             ):
-                row[lr0item.running_symbol] = Accept()
+                row[END_SYMBOL] = Accept()
             elif lr0item.running_symbol is not None:
                 if lr0item.running_symbol.type is SymbolType.TERMINAL:
                     shift_state = dfa.edges[(state, lr0item.running_symbol)]
@@ -335,19 +335,7 @@ def augment_grammar(grammar: Grammar) -> Grammar:
     )
 
 
-def read_grammar_and_queries() -> Tuple[Grammar, List[str]]:
-    """
-    E
-    T F
-    + * id ( )
-    E -> E + T
-    E -> T
-    T -> T * F
-    T -> F
-    F -> ( E )
-    F -> id
-    (id*id)
-    """
+def read_grammar_and_queries() -> Tuple[Grammar, List[List[Symbol]]]:
     symbols: Dict[str, Symbol] = {}
     symbols["λ"] = LAMBDA_SYMBOL
 
@@ -360,7 +348,7 @@ def read_grammar_and_queries() -> Tuple[Grammar, List[str]]:
             assert symbol_id != "->"
             symbols[symbol_id] = Symbol(id=symbol_id, type=symbol_type)
 
-    queries: List[str] = []
+    queries: List[List[Symbol]] = []
     productions = []
     while True:
         try:
@@ -377,8 +365,8 @@ def read_grammar_and_queries() -> Tuple[Grammar, List[str]]:
                 )
             )
         else:
-            assert len(tokens) == 1
-            queries.append(line)
+            queries.append([symbols[token] for token in tokens] + [END_SYMBOL])
+
     del symbols[start_symbol.id]
     return (
         Grammar(
@@ -388,6 +376,32 @@ def read_grammar_and_queries() -> Tuple[Grammar, List[str]]:
         ),
         queries,
     )
+
+
+def find_derivation(
+    table: ParseTable, initial_state: Node, query: List[Symbol]
+) -> Optional[List[Production]]:
+    stk: List[Shift] = [Shift(state=initial_state, state_index=0)]
+    productions: List[Production] = []
+    for symbol in query:
+        symbols_stk = [symbol]
+        while len(symbols_stk) > 0:
+            logger.debug(f"{symbols_stk[-1]} {stk[-1]}")
+            if symbols_stk[-1] not in table[stk[-1].state]:
+                return None
+            cell = table[stk[-1].state][symbols_stk[-1]]
+            if isinstance(cell, Accept):
+                return productions
+            elif isinstance(cell, Shift):
+                stk.append(cell)
+                symbols_stk.pop()
+            elif isinstance(cell, Reduce):
+                productions.append(cell.production)
+                stk = stk[: -len(cell.production.result)]
+                symbols_stk.append(cell.production.initial)
+            else:
+                raise RuntimeError()
+    return None
 
 
 def main() -> None:
@@ -401,7 +415,27 @@ def main() -> None:
     if not table:
         logger.warning("Not SLR(1)")
         return
+    for query in queries:
+        derivation = find_derivation(table, automaton.nodes[0], query)
+        if not derivation:
+            logger.info("Not accepted")
+        else:
+            logger.info("Accepted")
+            logger.info("".join(str(production) + "\n" for production in derivation))
 
 
 if __name__ == "__main__":
     main()
+    """
+    E
+    T F
+    + * id ( )
+    E -> E + T
+    E -> T
+    T -> T * F
+    T -> F
+    F -> ( E )
+    F -> id
+    ( id * id )
+    id * + id )
+    """
