@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
 import logging
 from collections import deque
 from enum import Enum, auto
-from typing import Dict, FrozenSet, List, NamedTuple, Optional, Set, Tuple, Union
+from typing import (Dict, FrozenSet, List, NamedTuple, Optional, Set, Tuple,
+                    Union)
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -60,6 +60,7 @@ class LR0Item(NamedTuple):
         if (
             self.index < len(self.production.result)
             and self.production.result[self.index] != END_SYMBOL
+            and self.production.result[self.index] != LAMBDA_SYMBOL
         ):
             return self.production.result[self.index]
         return None
@@ -246,7 +247,10 @@ def build_follow(
             for resulting in reversed(production.result):
                 if resulting in follow:
                     new_follow[resulting] |= follow[production.initial]
-                if LAMBDA_SYMBOL not in first[resulting]:
+                if (
+                    resulting is not LAMBDA_SYMBOL
+                    and LAMBDA_SYMBOL not in first[resulting]
+                ):
                     break
         return new_follow
 
@@ -368,6 +372,7 @@ def read_grammar_and_queries() -> Tuple[Grammar, List[List[Symbol]]]:
             queries.append([symbols[token] for token in tokens] + [END_SYMBOL])
 
     del symbols[start_symbol.id]
+    del symbols["λ"]
     return (
         Grammar(
             productions=productions,
@@ -397,7 +402,8 @@ def find_derivation(
                 symbols_stk.pop()
             elif isinstance(cell, Reduce):
                 productions.append(cell.production)
-                stk = stk[: -len(cell.production.result)]
+                if cell.production.result[0] is not LAMBDA_SYMBOL:
+                    stk = stk[: -len(cell.production.result)]
                 symbols_stk.append(cell.production.initial)
             else:
                 raise RuntimeError()
