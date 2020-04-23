@@ -1,8 +1,7 @@
 import logging
 from collections import deque
 from enum import Enum, auto
-from typing import (Dict, FrozenSet, List, NamedTuple, Optional, Set, Tuple,
-                    Union)
+from typing import Dict, FrozenSet, List, NamedTuple, Optional, Set, Tuple, Union
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -59,8 +58,8 @@ class LR0Item(NamedTuple):
     def running_symbol(self) -> Optional[Symbol]:
         if (
             self.index < len(self.production.result)
-            and self.production.result[self.index] != END_SYMBOL
-            and self.production.result[self.index] != LAMBDA_SYMBOL
+            and self.production.result[self.index] is not END_SYMBOL
+            and self.production.result[self.index] is not LAMBDA_SYMBOL
         ):
             return self.production.result[self.index]
         return None
@@ -70,7 +69,8 @@ class LR0Item(NamedTuple):
         for i, result_symbol in enumerate(self.production.result):
             if i == self.index:
                 result = result + "."
-            result = result + str(result_symbol)
+            if result_symbol is not LAMBDA_SYMBOL:
+                result = result + str(result_symbol)
         if self.index == len(self.production.result):
             result = result + "."
         return result
@@ -423,8 +423,9 @@ def main() -> None:
         return
     for query in queries:
         derivation = find_derivation(table, automaton.nodes[0], query)
+        logger.info("".join([str(symbol) for symbol in query[:-1]]))
         if not derivation:
-            logger.info("Not accepted")
+            logger.info("Not accepted\n")
         else:
             logger.info("Accepted")
             logger.info("".join(str(production) + "\n" for production in derivation))
@@ -444,4 +445,68 @@ if __name__ == "__main__":
     F -> id
     ( id * id )
     id * + id )
+    """
+
+    """
+    A
+    B
+    a b
+    A -> B b
+    B -> B a
+    B -> λ
+    a a a b
+    b
+    a a
+    """
+
+    """
+    S
+    A B
+    a b c
+    S -> a A B b
+    A -> a A c
+    A -> λ
+    B -> b B
+    B -> c
+    a a c b b c b
+    a b b b c b
+    a c b
+    a c c b
+    """
+
+    """
+    E
+
+    n + *
+    E -> E + E
+    E -> E * E
+    E -> n
+    E + E
+    """
+
+    """
+    A
+
+    a
+    A -> A a a
+    A -> λ
+    a a a a
+    a a a
+
+    """
+
+    """
+    E
+    T F
+    n + *
+    E -> E + T
+    E -> T
+    T -> T * F
+    T -> F
+    F -> n
+    n * n * n
+    n + n
+    n + n * n + n * n
+    n + n *
+    n + * n
     """
